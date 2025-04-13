@@ -1,0 +1,29 @@
+
+
+import telebot
+from logic import get_answer, log_query
+from config import *
+
+
+bot = telebot.TeleBot(TOKEN)
+@bot.message_handler(commands=['start'])
+def handle_start(message):
+    bot.send_message(message.chat.id, "Привет! Я бот, который может показывать города на карте. Напиши /help для списка команд.")
+@bot.message_handler(commands=['help'])
+def handle_start(message):
+    bot.send_message(message.chat.id, "Привет я Телеграмм-бот для технической поддержки я могу отвечать на вопросы как: Как оформить заказ?, Как узнать статус моего заказа?, Как отменить заказ?, Что делать, если товар пришел поврежденным?, Как связаться с вашей технической поддержкой?, Как узнать информацию о доставке? ")
+
+
+
+@bot.message_handler(func=lambda message: True)
+def handle_message(message):
+    question = message.text.strip().lower()  
+    answer = get_answer(question)
+    log_query(question)
+    if answer:
+        bot.reply_to(message, answer)  
+    else:
+        bot.reply_to(message, "Извините, я не знаю ответа на этот вопрос.") 
+
+
+bot.polling()
