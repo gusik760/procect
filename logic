@@ -1,0 +1,42 @@
+import sqlite3
+
+qa_dict = {
+    "Как оформить заказ?": "Для оформления заказа, пожалуйста, выберите интересующий вас товар и нажмите кнопку 'Добавить в корзину', затем перейдите в корзину и следуйте инструкциям для завершения покупки.",
+    "Как узнать статус моего заказа?": "Вы можете узнать статус вашего заказа, войдя в свой аккаунт на нашем сайте и перейдя в раздел 'Мои заказы'. Там будет указан текущий статус вашего заказа.",
+    "Как отменить заказ?": "Если вы хотите отменить заказ, пожалуйста, свяжитесь с нашей службой поддержки как можно скорее. Мы постараемся помочь вам с отменой заказа до его отправки.",
+    "Что делать, если товар пришел поврежденным?": "При получении поврежденного товара, пожалуйста, сразу свяжитесь с нашей службой поддержки и предоставьте фотографии повреждений. Мы поможем вам с обменом или возвратом товара.",
+    "Как связаться с вашей технической поддержкой?": "Вы можете связаться с нашей технической поддержкой через телефон на нашем сайте или написать нам в чат-бота.",
+    "Как узнать информацию о доставке?": "Информацию о доставке вы можете найти на странице оформления заказа на нашем сайте. Там указаны доступные способы доставки и сроки."
+
+}
+
+def get_answer(question):
+    q = question.strip().lower()
+    return qa_dict.get(q, "Извини, я не знаю ответа на этот вопрос.")
+
+
+def log_query(question):
+    conn = sqlite3.connect('questions_answers.db')
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO log_queries (question) VALUES (?)", (question,))
+    conn.commit()
+    conn.close()
+def create_db():
+    conn = sqlite3.connect('questions_answers.db')
+    cursor = conn.cursor()
+    
+    cursor.execute('''CREATE TABLE IF NOT EXISTS qa (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        question TEXT UNIQUE)''')
+
+
+    cursor.execute('''CREATE TABLE IF NOT EXISTS log_queries (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        question TEXT,
+                        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)''')
+
+    conn.commit()
+    conn.close()
+
+
+create_db()
